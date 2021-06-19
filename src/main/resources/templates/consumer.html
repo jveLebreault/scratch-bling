@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title th:text="${title}"></title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+        <link th:href="@{/css/style.css}" rel="stylesheet"/>
+    </head>
+
+    <body class="container">
+        <nav class="navbar fixed-top navbar-light bg-light">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">Scratch bling</span>
+            </div>
+        </nav>
+
+        <h1 th:text="${title}"></h1>
+
+        <h3>Here's the list of our available scratchers</h3>
+            <div class="row">
+                <div class="col">
+                    <th:block th:each="item : ${items}">
+                        <div class="card m-2">
+                            <h5 class="card-header" th:text="${item.name}"></h5>
+                            <div class="card-body">
+                                <p class="card-text" th:text="${item.description}"></p>
+                                <strong>Available in size(s): </strong>
+                                <ul th:each="s : ${item.size}">
+                                    <li th:text="${s}"></li>
+                                </ul>
+                                <strong>Price: </strong> <span th:text="'$' + ${item.price}"></span>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        <div class="d-flex justify-content-between">
+            <div>
+                <th:block th:if="${items.hasPrevious()}">
+                    <a th:href="@{/web(page=${items.getNumber() - 1}, size=${items.getSize()})}">Previous page</a>
+                </th:block>
+            </div>
+
+            <div>
+                <th:block th:if="${items.hasNext()}">
+                    <a th:href="@{/web(page=${items.getNumber() + 1}, size=${items.getSize()})}">Next page</a>
+                </th:block>
+            </div>
+        </div>
+
+    </body>
+</html>
