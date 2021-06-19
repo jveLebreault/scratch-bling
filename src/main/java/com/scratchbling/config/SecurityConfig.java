@@ -41,10 +41,49 @@ public class SecurityConfig {
 
 
         protected void configure(HttpSecurity http) throws Exception{
+
             http.
-                sessionManagement().
+                antMatcher("/api/**").
+                    sessionManagement().
+                        sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+                    and().
+                        cors().
+                            disable().
+                        csrf().
+                            disable().
+                        formLogin().
+                            disable().
+                        logout().
+                            disable().
+                        httpBasic().
+                            disable().
+                    authorizeRequests().
+                        antMatchers(HttpMethod.GET).permitAll().
+                        antMatchers(HttpMethod.POST).hasRole("ADMIN").
+                        antMatchers(HttpMethod.PUT).hasRole("ADMIN").
+                        antMatchers(HttpMethod.PATCH).hasRole("ADMIN").
+                        antMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+                    .and().
+                        addFilterAfter(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+    }
+
+    @Configuration
+    @Order(2)
+    public static class ApiAuthConfig extends WebSecurityConfigurerAdapter {
+        protected void configure(HttpSecurity http) throws Exception {
+
+            http.
+                antMatcher("/auth").
+                    authorizeRequests().
+                    anyRequest().
+                    permitAll().
+                and().
+                    sessionManagement().
                     sessionCreationPolicy(SessionCreationPolicy.STATELESS).
                 and().
+                    cors().
+                        disable().
                     csrf().
                         disable().
                     formLogin().
@@ -52,19 +91,7 @@ public class SecurityConfig {
                     logout().
                         disable().
                     httpBasic().
-                        disable().
-                authorizeRequests().
-                    antMatchers("/auth").
-                        permitAll().
-                    and().
-                authorizeRequests().
-                    antMatchers(HttpMethod.GET, "/api/*").permitAll().
-                    antMatchers(HttpMethod.POST, "/api/*").hasRole("ADMIN").
-                    antMatchers(HttpMethod.PUT, "/api/*").hasRole("ADMIN").
-                    antMatchers(HttpMethod.PATCH, "/api/*").hasRole("ADMIN").
-                    antMatchers(HttpMethod.DELETE, "/api/*").hasRole("ADMIN").
-                    and().
-                    addFilterAfter(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
+                        disable();
         }
     }
 
