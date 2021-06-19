@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+
+    <body class="container">
+        <nav class="navbar fixed-top navbar-light bg-light">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">Scratch bling</span>
+                <span>Welcome, [[${#request.remoteUser}]] - <a th:href="@{/logout}">Log out</a></span>
+            </div>
+        </nav>
+
+        <h1 th:text="${title}"></h1>
+
+        <h3>Admin panel for scratch bling</h3>
+
+        <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}">
+            A simple primary alert—check it out!
+        </div>
+
+        <section class="row">
+            <div class="col-sm-6">
+                <form class="row mt-5 mb-5" th:action="@{/web/admin}" method="get">
+                        <label class="col-sm-2 col-form-label">Search by name: </label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="text" name="search" th:value="${search}"/>
+                        </div>
+                    <input type="hidden" name="action" value="search">
+                    <div class="col-sm-3">
+                        <input class="btn btn-primary" type="submit" value="Search"/>
+                    </div>
+
+                </form>
+
+                <th:block th:each="item : ${items}">
+                    <div class="card m-2">
+                        <h5 class="card-header" th:text="${item.name}"></h5>
+                        <div class="card-body">
+                            <p class="card-text" th:text="${item.description}"></p>
+                            <strong>Available in size(s): </strong>
+                            <ul th:each="s : ${item.size}">
+                                <li th:text="${s}"></li>
+                            </ul>
+                            <strong>Price: </strong> <span th:text="'$' + ${item.price}"></span>
+
+                            <hr />
+
+                            <div class="d-flex justify-content-between">
+                                <form th:action="@{/web/admin}" method="post">
+                                    <input type="hidden" name="action" value="edit">
+                                    <input type="hidden" name="id" th:value="${item.id}">
+                                    <input class="btn btn-warning" type="submit" value="Edit"/>
+                                </form>
+
+                                <form th:action="@{/web/admin}" method="post">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" th:value="${item.id}">
+                                    <input class="btn btn-danger" type="submit" value="Delete"/>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </th:block>
+
+                <div class="d-flex justify-content-start">
+                    <div>
+                        <th:block th:if="${items.hasPrevious()}">
+                            <a th:href="@{/web/admin(page=${items.getNumber() - 1}, size=${items.getSize()})}">&lt;- Previous page</a>
+                            |
+                        </th:block>
+                    </div>
+
+                    <div>
+                        <th:block th:if="${items.hasNext()}">
+                            <a th:href="@{/web/admin(page=${items.getNumber() + 1}, size=${items.getSize()})}">Next page -&gt;</a>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 border-start border-bottom border-2 rounded-2">
+                <h3>[[${action}]] item</h3>
+                <form th:action="@{/web/admin}" th:object="${item}" method="post">
+                    <div class="mb-4">
+                        <label class="form-label">Name: </label>
+                        <input class="form-control" type="text" th:field="*{name}"/>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Description: </label>
+                        <textarea class="form-control" rows="4" th:field="*{description}"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <span>Size(s): </span>
+                        <ul>
+                            <li class="form-check" th:each="size : ${sizes}">
+                                <input class="form-check-input" type="checkbox" th:field="*{size}" th:value="${size}"/>
+                                <label class="form-label" th:for="${#ids.prev('size')}" th:text="${size}"></label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Price: </label>
+                        <input class="form-control" type="number" step="0.01" name="price" th:field="*{price}"/>
+                    </div>
+                    <input type="hidden" name="id" th:value="${item.id}">
+                    <input type="hidden" name="action" th:value="${action}">
+                    <input class="btn btn-primary" type="submit" value="Submit"/>
+                </form>
+            </div>
+        </section>
+    </body>
+</html>
