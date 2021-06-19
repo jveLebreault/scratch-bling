@@ -107,29 +107,13 @@ public class SecurityConfig {
                 authorizeRequests().
                     antMatchers("/web/admin").hasRole("ADMIN").
                 and().
-                    formLogin(withDefaults()).
-                    logout(withDefaults()).
+                    formLogin().
+                and().
+                    logout().
+                and().
                 authorizeRequests().
                     antMatchers("/web").permitAll();
         }
     }
-
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication().withUser("admin").password("{noop}bling182").roles("ADMIN");
-//    }
-
-//    @Override
-//    public void configure (WebSecurity web) {
-//        web.ignoring().antMatchers("/actuator/**","/api/**");
-//    }
-
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//
-//
-
-//    }
 
 }
